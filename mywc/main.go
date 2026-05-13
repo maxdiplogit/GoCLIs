@@ -9,6 +9,8 @@ import (
 	// "flag"
 )
 
+const KILOBYTE uint16 = 1024
+
 // This tool reimplements UNIX's wc binary in Go
 // It reads either from the stdin/command-line-args or from a file
 // Currently it has only two flags -w (count only words) and -l (count only lines)
@@ -53,7 +55,9 @@ func main() {
 
 	scanner := bufio.NewScanner(file)
 
-	var lines, words int = 0, 0
+	scanner.Buffer(make([]byte, 64*int(KILOBYTE)), 128*int(KILOBYTE))
+
+	var lines, words, letters int = 0, 0, 0
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -62,11 +66,21 @@ func main() {
 		wordsFromString := strings.Split(line, " ")
 		// fmt.Printf("wordsFromString: %#v\n", wordsFromString)
 
+		for _, word := range wordsFromString {
+			// fmt.Printf("word: %#v\n", word)
+
+			for range word {
+				// fmt.Printf("letter: %#v\n", letter)
+				letters++
+			}
+		}
+
 		words += len(wordsFromString)
 
 		lines++
 	}
 
+	fmt.Println("Letters: ", letters)
 	fmt.Println("Words: ", words)
 	fmt.Println("Lines: ", lines)
 }
