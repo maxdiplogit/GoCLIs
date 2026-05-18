@@ -67,16 +67,30 @@ func QuickSort(todos []*todo.Todo, low int, high int) {
 }
 
 func getPivotIndex(todos []*todo.Todo, low, high int) int {
-	pivot := todos[high].Id
-	i := low - 1
+	if low <= high {
+		return low
+	}
 
-	for j := low; j < high; j++ {
-		if todos[j].Id <= pivot {
+	todos[low], todos[(low+high)/2] = todos[(low+high)/2], todos[low]
+	pivotElement := todos[low].Id
+
+	i := low + 1
+	j := high
+
+	for i <= j {
+		for todos[i].Id < pivotElement {
 			i++
+		}
+
+		for todos[j].Id > pivotElement {
+			j--
+		}
+
+		if i <= j {
 			todos[i], todos[j] = todos[j], todos[i]
 		}
 	}
 
-	todos[i+1], todos[high] = todos[high], todos[i+1]
-	return i + 1
+	todos[0], todos[j] = todos[j], todos[i]
+	return j
 }
